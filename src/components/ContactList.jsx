@@ -9,6 +9,31 @@ export const ContactList = () => {
     const [contactToDelete, setContactToDelete] = useState(null);
     const navigate = useNavigate();
 
+    // Check if the agenda exists, and create it if it doesn't
+    async function checkAgenda() {
+        try {
+            const response = await fetch("https://playground.4geeks.com/contact/agendas/JavierAgenda");
+            if (!response.ok) {
+                // If agenda doesn't exist, create it
+                const createResponse = await fetch("https://playground.4geeks.com/contact/agendas/JavierAgenda", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+                if (createResponse.ok) {
+                    console.log("Agenda JavierAgenda created successfully");
+                } else {
+                    console.error("Error creating agenda:", createResponse.statusText);
+                }
+            } else {
+                console.log("Agenda JavierAgenda already exists");
+            }
+        } catch (error) {
+            console.error("Error checking agenda:", error);
+        }
+    }
+
     // Obtain the list of contacts from the backend API
     async function fetchContacts() {
         try {
@@ -52,6 +77,7 @@ export const ContactList = () => {
 
     // Fetch contacts when the component mounts
     useEffect(() => {
+        checkAgenda();
         fetchContacts();
     }, []);
 
